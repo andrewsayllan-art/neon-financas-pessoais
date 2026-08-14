@@ -373,6 +373,8 @@
   .plan-btn:hover{border-color:var(--cyan);box-shadow:0 0 0 1px rgba(37,244,255,0.35),0 0 18px rgba(37,244,255,0.2);transform:translateY(-1px);}
   .plan-btn.ghost{background:transparent;border:1px solid var(--border);color:var(--dim);font-weight:600;}
   .plan-btn.ghost:hover{border-color:var(--cyan);color:var(--cyan);box-shadow:none;transform:none;}
+  .plan-btn.ghost.danger{border-color:rgba(255,46,196,.45);color:#ffb3e6;}
+  .plan-btn.ghost.danger:hover{border-color:var(--magenta);color:var(--magenta);box-shadow:0 0 14px rgba(255,46,196,.25);}
   .plan-btn:disabled{opacity:.55;cursor:wait;transform:none;}
 
   .toast{
@@ -1045,6 +1047,14 @@
                   <input type="file" id="backupFile" accept=".json,application/json" hidden>
                 </div>
                 <div class="backup-hint">Arquivo <b>.json</b> com lançamentos, regras e nomes das importações. Guarde-o fora do navegador para se proteger de perda de dados.</div>
+              </div>
+              <div class="backup-box">
+                <div class="settings-label">Gerenciar base local</div>
+                <div class="backup-actions">
+                  <button class="plan-btn ghost" id="btnUndoLast">Desfazer última importação</button>
+                  <button class="plan-btn ghost danger" id="btnClearBase">Limpar base</button>
+                </div>
+                <div class="backup-hint" id="manageHint">"Desfazer" remove os lançamentos salvos na última confirmação de importação. "Limpar base" apaga todos os lançamentos deste navegador (com confirmação extra).</div>
               </div>
             </div>
           </div>
@@ -2215,6 +2225,17 @@ function dbPutMany(store, arr){
     });
   });
 }
+function dbDelMany(store, keys){
+  return DB_READY.then(function(){
+    return new Promise(function(res, rej){
+      var tx = db.transaction(store, 'readwrite');
+      var os = tx.objectStore(store);
+      keys.forEach(function(k){ os.delete(k); });
+      tx.oncomplete = function(){ res(); };
+      tx.onerror = function(){ rej(tx.error); };
+    });
+  });
+}
 function dbGetSetting(key, def){
   return dbGet('settings', key).then(function(v){ return v ? v.val : (def !== undefined ? def : null); }).catch(function(){ return def !== undefined ? def : null; });
 }
@@ -2282,6 +2303,7 @@ function restoreBackup(file){
         if(c1) c1.value = names.cc;
         if(c2) c2.value = names.card;
         if(lastImportAt) renderLastImport();
+        loadLastImportInfo();
       })
       .catch(function(e){ toast('Erro ao restaurar: ' + e); });
   };
@@ -2295,6 +2317,66 @@ function wireBackupUI(){
   if(bE) bE.addEventListener('click', exportBackup);
   if(bR && fI) bR.addEventListener('click', function(){ fI.value = ''; fI.click(); });
   if(fI) fI.addEventListener('change', function(){ if(this.files && this.files[0]) restoreBackup(this.files[0]); });
+}
+
+/* ================= GERENCIAR BASE LOCAL (desfazer importação / limpar) ================= */
+var LAST_IMPORT_IDS = [];
+function loadLastImportInfo(){
+  return dbGetSetting('lastImportIds', []).then(function(ids){
+    LAST_IMPORT_IDS = Array.isArray(ids) ? ids : [];
+    var btn = document.getElementById('btnUndoLast');
+    var hint = document.getElementById('manageHint');
+    if(btn){
+      btn.disabled = !LAST_IMPORT_IDS.length;
+      btn.textContent = LAST_IMPORT_IDS.length ? 'Desfazer última importação (' + LAST_IMPORT_IDS.length + ')' : 'Desfazer última importação';
+    }
+    if(hint){
+      hint.innerHTML = LAST_IMPORT_IDS.length
+        ? '"Desfazer" remove os <b>' + LAST_IMPORT_IDS.length + '</b> lançamento(s) salvos na última confirmação. "Limpar base" apaga todos os lançamentos deste navegador (com confirmação extra).'
+        : '"Desfazer" remove os lançamentos salvos na última confirmação de importação. "Limpar base" apaga todos os lançamentos deste navegador (com confirmação extra).';
+    }
+  });
+}
+function undoLastImport(){
+  return dbGetSetting('lastImportIds', []).then(function(ids){
+    ids = Array.isArray(ids) ? ids : [];
+    if(!ids.length){ toast('Nenhuma importação para desfazer.'); return; }
+    if(!confirm('Desfazer a última importação (' + ids.length + ' lançamento(s))?\n\nOs lançamentos salvos serão removidos da base. Essa ação não pode ser desfeita.')) return;
+    return dbDelMany('transactions', ids)
+      .then(function(){ return dbDel('settings', 'lastImportIds'); })
+      .then(function(){
+        LAST_IMPORT_IDS = [];
+        lastImportAt = null;
+        renderLastImport();
+        toast('Última importação desfeita.');
+        loadLastImportInfo();
+        return loadLocalData();
+      })
+      .catch(function(e){ toast('Erro ao desfazer: ' + e); });
+  });
+}
+function clearBase(){
+  var n = RAW.length;
+  if(!confirm('LIMPAR TODA A BASE?\n\nIsso apaga TODOS os ' + n + ' lançamento(s) salvos neste navegador.\nAs regras de categoria e os nomes das importações serão mantidos.\n\nDigite LIMPAR no próximo passo para confirmar.')) return;
+  var t = prompt('Confirmação final — digite LIMPAR para apagar os ' + n + ' lançamento(s):');
+  if(t === null) return;
+  if(String(t).trim().toUpperCase() !== 'LIMPAR'){ toast('Confirmação cancelada.'); return; }
+  Promise.all([dbClear('transactions'), dbDel('settings', 'lastImportIds')])
+    .then(function(){
+      LAST_IMPORT_IDS = [];
+      lastImportAt = null;
+      renderLastImport();
+      toast('Base limpa. Pronta para uma nova importação.');
+      loadLastImportInfo();
+      return loadLocalData();
+    })
+    .catch(function(e){ toast('Erro ao limpar: ' + e); });
+}
+function wireManageUI(){
+  var u = document.getElementById('btnUndoLast');
+  var c = document.getElementById('btnClearBase');
+  if(u) u.addEventListener('click', undoLastImport);
+  if(c) c.addEventListener('click', clearBase);
 }
 
 function uid(){ return 't' + Date.now().toString(36) + Math.random().toString(36).slice(2,9); }
@@ -2677,9 +2759,12 @@ function confirmStaging(){
   });
   if(!toSave.length){ toast('Nada marcado para salvar.'); return Promise.resolve(); }
   return dbPutMany('transactions', toSave).then(function(){
+    LAST_IMPORT_IDS = toSave.map(function(r){ return r.id; });
     lastImportAt = new Date();
     dbSetSetting('lastImport', lastImportAt.getTime());
+    dbSetSetting('lastImportIds', LAST_IMPORT_IDS);
     renderLastImport();
+    loadLastImportInfo();
     toast(toSave.length + ' lançamento(s) importado(s).');
     STAGING = [];
     document.getElementById('staging').style.display = 'none';
@@ -3168,6 +3253,8 @@ function initLocalApp(){
       wireImportUI();
       wireTxForm();
       wireBackupUI();
+      wireManageUI();
+      loadLastImportInfo();
       setConnectStatus(RAW.length ? 'Base local pronta.' : 'Nenhum extrato importado nesta sessão.', RAW.length ? 'good' : 'stale');
     })
     .then(loadLocalData)

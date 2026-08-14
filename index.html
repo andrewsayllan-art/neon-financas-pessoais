@@ -533,6 +533,12 @@
   .update-line b{color:var(--text);font-family:var(--mono);font-weight:600;}
   .link-btn{color:var(--cyan);cursor:pointer;background:none;border:none;font-family:var(--sans);font-size:12.5px;font-weight:600;text-decoration:underline dotted;}
   .link-btn:hover{color:var(--magenta);}
+  .sheet-import{margin-top:16px;padding-top:16px;border-top:1px dashed var(--border);}
+  .sheet-import-label{font-size:12.5px;color:var(--dim);line-height:1.5;}
+  .sheet-import-label b{color:var(--text);}
+  .sheet-import .connect-form{margin-top:10px;}
+  .sheet-import-hint{font-size:11.5px;color:var(--faint);line-height:1.55;margin-top:9px;}
+  .sheet-import-hint b{color:var(--dim);}
 
   .connect-right{border-left:1px solid var(--border);padding-left:24px;min-width:0;}
   .saved-title{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-bottom:10px;}
@@ -826,6 +832,10 @@
   .base-meta b{color:var(--text);font-family:var(--mono);font-weight:600;}
   .import-settings{display:flex;flex-direction:column;gap:10px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border);}
   .settings-label{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);}
+  .backup-box{display:flex;flex-direction:column;gap:10px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border);}
+  .backup-actions{display:flex;gap:8px;flex-wrap:wrap;}
+  .backup-actions .plan-btn{flex:1;min-width:130px;}
+  .backup-hint{font-size:11px;color:var(--faint);line-height:1.55;}
 
   .staging{margin-top:22px;background:linear-gradient(165deg, var(--surface), var(--bg-2));border:1px solid var(--border);border-radius:18px;padding:24px 26px;}
   .stg-summary{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;}
@@ -839,19 +849,20 @@
     font-family:var(--sans);font-size:12px;padding:5px 7px;border-radius:7px;transition:.15s;
   }
   .stg-table input:focus,.stg-table select:focus{outline:none;border-color:var(--cyan);box-shadow:0 0 0 1px rgba(37,244,255,0.35);}
-  .stg-table td{white-space:nowrap;}
+  .stg-table td{padding:5px 6px;white-space:nowrap;vertical-align:middle;}
+  .stg-table .stg-chk{width:34px;text-align:center;}
+  .stg-table .stg-chk input{width:auto;min-width:0;margin:0;}
   .stg-table .stg-desc{min-width:210px;}
+  .stg-table .stg-tipo,.stg-table .stg-tipo2{min-width:110px;}
   .stg-table .stg-cat{min-width:130px;}
   .stg-table .stg-subcat{min-width:120px;}
-  .stg-table .stg-val{min-width:110px;text-align:right;}
+  .stg-table .stg-conta{min-width:140px;}
+  .stg-table .stg-forma{min-width:110px;}
+  .stg-table .stg-valor{min-width:110px;text-align:right;}
   .stg-table .stg-date{min-width:120px;}
+  .stg-table .stg-badge-cell{width:96px;}
+  .stg-badge{display:inline-block;background:rgba(255,176,32,0.14);color:var(--amber);border:1px solid rgba(255,176,32,0.35);border-radius:999px;padding:2px 9px;font-size:10.5px;font-weight:600;white-space:nowrap;}
   .stg-dup td{opacity:.55;}
-  .stg-dup .stg-desc input{text-decoration:line-through;}
-  .stg-del{background:transparent;border:none;color:var(--faint);font-size:15px;cursor:pointer;padding:4px 8px;border-radius:7px;transition:.15s;}
-  .stg-del:hover{color:var(--red);background:rgba(255,77,109,0.12);}
-  .stg-keep{display:inline-flex;align-items:center;gap:5px;font-size:11px;color:var(--faint);cursor:pointer;user-select:none;}
-  .stg-keep input{width:auto;min-width:0;margin:0;}
-  .stg-keep.dup-on{color:var(--amber);}
 
   .rules-card{margin-top:22px;background:linear-gradient(165deg, var(--surface), var(--bg-2));border:1px solid var(--border);border-radius:18px;padding:24px 26px;}
   .rule-list{display:flex;flex-direction:column;gap:8px;margin-top:6px;}
@@ -910,6 +921,24 @@
 </head>
 <body>
 
+<div class="lock-overlay" id="lockScreen">
+  <div class="lock-card">
+    <div class="lock-logo"><span class="lock-dot"></span><span class="ln">Neon</span> <span class="lm">Finanças</span></div>
+    <div class="lock-title" id="lockTitle">Acesso ao painel</div>
+    <div class="lock-sub" id="lockSub"></div>
+    <div class="lock-form" id="lockForm"></div>
+    <div class="lock-google" id="lockGoogle" style="display:none">
+      <div class="lock-or"><span>ou continue com</span></div>
+      <div class="auth-btn" id="btnLoginLock">
+        <svg viewBox="0 0 24 24" width="18" height="18"><path fill="#4285F4" d="M23.5 12.3c0-.9-.1-1.5-.3-2.2H12v4.1h6.5c-.1 1.1-.8 2.7-2.4 3.8l3.7 2.9c2.3-2.1 3.7-5.1 3.7-8.6z"/><path fill="#34A853" d="M12 24c3.2 0 5.9-1.1 7.9-2.9l-3.7-2.9c-1 .7-2.4 1.2-4.2 1.2-3.2 0-6-2.1-7-5.1l-3.8 2.9C3.3 21.3 7.4 24 12 24z"/><path fill="#FBBC05" d="M5 12c0-.8.1-1.6.4-2.3L1.5 6.8C.5 8.7 0 10.8 0 13s.5 4.3 1.5 6.2l3.9-2.9C5.1 13.6 5 12.8 5 12z"/><path fill="#EA4335" d="M12 4.7c2.3 0 3.9 1 4.8 1.8l3.5-3.4C17.9 1.2 15.2 0 12 0 7.4 0 3.3 2.7 1.5 6.8l3.9 2.9C6 6.8 8.8 4.7 12 4.7z"/></svg>
+        <span>Entrar com Google</span>
+      </div>
+    </div>
+    <div class="lock-msg" id="lockMsg"></div>
+    <div class="lock-foot" id="lockFoot"></div>
+  </div>
+</div>
+
 <header class="top">
   <div class="top-inner">
     <div class="top-left">
@@ -936,6 +965,8 @@
           <button class="theme-opt" data-theme="verde"><span class="swatch" style="background:#10B981;color:#10B981"></span>Verde</button>
         </div>
       </div>
+      <button class="lock-toggle" id="btnLock" style="display:none">Trancar</button>
+      <div id="authArea"></div>
     </div>
   </div>
 </header>
@@ -984,6 +1015,14 @@
                 </div>
               </div>
               <div class="import-status" id="importStatus"></div>
+              <div class="sheet-import">
+                <div class="sheet-import-label">Ou importe direto do <b>Google Sheets</b> (aba <b>Lançamento</b>)</div>
+                <div class="connect-form">
+                  <input id="sheetInput" class="sheet-input" placeholder="https://docs.google.com/spreadsheets/d/..." autocomplete="off" spellcheck="false">
+                  <button id="btnConnect" class="connect-btn">Buscar planilha</button>
+                </div>
+                <div class="sheet-import-hint" id="sheetHint">Planilha <b>pública</b> ("qualquer pessoa com o link") funciona sem login. Para planilha <b>privada</b>, faça login com o Google na tela de acesso — a planilha precisa estar compartilhada com a conta usada. Os dados continuam salvos apenas neste navegador.</div>
+              </div>
               <div class="sheet-meta">
                 <div class="status-line"><span class="status-dot" id="statusDot"></span><span id="connectStatus">Nenhum extrato importado nesta sessão</span></div>
                 <div class="update-line">Última importação: <b id="lastImportInfo">—</b></div>
@@ -997,6 +1036,15 @@
                 <div class="settings-label">Nomes usados nas importações</div>
                 <label class="lock-field"><span>Conta corrente</span><input id="cfgCC" class="lock-input" maxlength="40" spellcheck="false"></label>
                 <label class="lock-field"><span>Cartão de crédito</span><input id="cfgCard" class="lock-input" maxlength="40" spellcheck="false"></label>
+              </div>
+              <div class="backup-box">
+                <div class="settings-label">Backup dos dados</div>
+                <div class="backup-actions">
+                  <button class="plan-btn ghost" id="btnBackupExport">Baixar backup</button>
+                  <button class="plan-btn ghost" id="btnBackupRestore">Restaurar</button>
+                  <input type="file" id="backupFile" accept=".json,application/json" hidden>
+                </div>
+                <div class="backup-hint">Arquivo <b>.json</b> com lançamentos, regras e nomes das importações. Guarde-o fora do navegador para se proteger de perda de dados.</div>
               </div>
             </div>
           </div>
@@ -2171,6 +2219,83 @@ function dbGetSetting(key, def){
   return dbGet('settings', key).then(function(v){ return v ? v.val : (def !== undefined ? def : null); }).catch(function(){ return def !== undefined ? def : null; });
 }
 function dbSetSetting(key, val){ return dbPut('settings', {key:key, val:val}); }
+function dbClear(store){ return withStore(store, 'readwrite').then(function(os){ return idbReq(os.clear()); }); }
+
+/* ================= BACKUP / RESTAURAÇÃO ================= */
+function validBackup(obj){
+  return !!(obj && obj.app === 'neon-financas-pessoais' && obj.data &&
+    Array.isArray(obj.data.transactions) && Array.isArray(obj.data.rules) && Array.isArray(obj.data.settings));
+}
+function exportBackup(){
+  return Promise.all([dbGetAll('transactions'), dbGetAll('rules'), dbGetAll('settings')])
+    .then(function(res){
+      var data = {
+        app: 'neon-financas-pessoais',
+        ver: 1,
+        criado: new Date().toISOString(),
+        data: { transactions: res[0], rules: res[1], settings: res[2] }
+      };
+      var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = 'neon-backup-' + new Date().toISOString().slice(0,10) + '.json';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(function(){ URL.revokeObjectURL(url); }, 3000);
+      toast('Backup baixado: ' + res[0].length + ' lançamento(s), ' + res[1].length + ' regra(s).');
+    })
+    .catch(function(e){ toast('Erro ao gerar backup: ' + e); });
+}
+function restoreBackup(file){
+  var reader = new FileReader();
+  reader.onload = function(){
+    var obj;
+    try { obj = JSON.parse(reader.result); }
+    catch(e){ toast('Arquivo inválido: não é um JSON válido.'); return; }
+    if(!validBackup(obj)){
+      toast('Arquivo inválido: não parece um backup do Neon.'); return;
+    }
+    var n = obj.data.transactions.length, nr = obj.data.rules.length;
+    if(!confirm('Restaurar vai SUBSTITUIR a base atual (' + RAW.length + ' lançamento(s)) por este backup (' + n + ' lançamento(s) + ' + nr + ' regra(s)). Continuar?')) return;
+    Promise.all([dbClear('transactions'), dbClear('rules'), dbClear('settings')])
+      .then(function(){
+        return Promise.all([
+          dbPutMany('transactions', obj.data.transactions),
+          dbPutMany('rules', obj.data.rules),
+          dbPutMany('settings', obj.data.settings)
+        ]);
+      })
+      .then(function(){
+        toast('Backup restaurado: ' + n + ' lançamento(s), ' + nr + ' regra(s).');
+        loadLocalData();
+        loadRules();
+        names.cc = DEF_NAMES.cc; names.card = DEF_NAMES.card;
+        obj.data.settings.forEach(function(s){
+          if(s.key === 'cfgCC' && s.val) names.cc = s.val;
+          if(s.key === 'cfgCard' && s.val) names.card = s.val;
+          if(s.key === 'lastImport' && s.val){ lastImportAt = new Date(s.val); }
+        });
+        var c1 = document.getElementById('cfgCC');
+        var c2 = document.getElementById('cfgCard');
+        if(c1) c1.value = names.cc;
+        if(c2) c2.value = names.card;
+        if(lastImportAt) renderLastImport();
+      })
+      .catch(function(e){ toast('Erro ao restaurar: ' + e); });
+  };
+  reader.onerror = function(){ toast('Não foi possível ler o arquivo.'); };
+  reader.readAsText(file);
+}
+function wireBackupUI(){
+  var bE = document.getElementById('btnBackupExport');
+  var bR = document.getElementById('btnBackupRestore');
+  var fI = document.getElementById('backupFile');
+  if(bE) bE.addEventListener('click', exportBackup);
+  if(bR && fI) bR.addEventListener('click', function(){ fI.value = ''; fI.click(); });
+  if(fI) fI.addEventListener('change', function(){ if(this.files && this.files[0]) restoreBackup(this.files[0]); });
+}
 
 function uid(){ return 't' + Date.now().toString(36) + Math.random().toString(36).slice(2,9); }
 function normDesc(s){ return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase(); }
@@ -2504,23 +2629,23 @@ function stageRows(entries, src){
 function renderStaging(){
   var body = document.getElementById('stgBody');
   body.innerHTML = STAGING.map(function(s, i){
-    return '<div class="stg-row' + (s._dup ? ' stg-dup' : '') + '">' +
-      '<label class="stg-chk"><input type="checkbox" data-i="' + i + '" ' + (s._keep ? 'checked' : '') + '></label>' +
-      '<label class="stg-cel stg-date"><input data-f="d" data-i="' + i + '" value="' + esc(s.d||'') + '" placeholder="AAAA-MM-DD"></label>' +
-      '<label class="stg-cel stg-desc"><input data-f="desc" data-i="' + i + '" value="' + esc(s.desc) + '"></label>' +
-      '<label class="stg-cel stg-tipo"><select data-f="tipo" data-i="' + i + '">' +
+    return '<tr class="' + (s._dup ? 'stg-dup' : '') + '">' +
+      '<td class="stg-chk"><input type="checkbox" data-i="' + i + '" ' + (s._keep ? 'checked' : '') + '></td>' +
+      '<td class="stg-date"><input data-f="d" data-i="' + i + '" value="' + esc(s.d||'') + '" placeholder="AAAA-MM-DD"></td>' +
+      '<td class="stg-desc"><input data-f="desc" data-i="' + i + '" value="' + esc(s.desc) + '"></td>' +
+      '<td class="stg-tipo"><select data-f="tipo" data-i="' + i + '">' +
         ['Gasto','Receita','Investimento'].map(function(t){ return '<option value="' + t + '"' + (s.tipo===t?' selected':'') + '>' + t + '</option>'; }).join('') +
-      '</select></label>' +
-      '<label class="stg-cel stg-tipo2"><select data-f="tipo2" data-i="' + i + '">' +
+      '</select></td>' +
+      '<td class="stg-tipo2"><select data-f="tipo2" data-i="' + i + '">' +
         '<option value="">—</option>' + ['Essencial','Não essencial'].map(function(t){ return '<option value="' + t + '"' + (s.tipo2===t?' selected':'') + '>' + t + '</option>'; }).join('') +
-      '</select></label>' +
-      '<label class="stg-cel stg-cat"><input data-f="cat" data-i="' + i + '" list="catSuggest" value="' + esc(s.cat||'') + '" placeholder="categoria"></label>' +
-      '<label class="stg-cel stg-subcat"><input data-f="subcat" data-i="' + i + '" list="dlSubcat" value="' + esc(s.subcat||'') + '" placeholder="subcategoria"></label>' +
-      '<label class="stg-cel stg-conta"><input data-f="conta" data-i="' + i + '" list="dlConta" value="' + esc(s.conta||'') + '"></label>' +
-      '<label class="stg-cel stg-forma"><input data-f="forma" data-i="' + i + '" list="dlForma" value="' + esc(s.forma||'') + '"></label>' +
-      '<label class="stg-cel stg-valor"><input data-f="v" data-i="' + i + '" type="number" step="0.01" min="0" value="' + s.v + '"></label>' +
-      (s._dup ? '<span class="stg-badge" title="Já existe na base">duplicado</span>' : '') +
-    '</div>';
+      '</select></td>' +
+      '<td class="stg-cat"><input data-f="cat" data-i="' + i + '" list="catSuggest" value="' + esc(s.cat||'') + '" placeholder="categoria"></td>' +
+      '<td class="stg-subcat"><input data-f="subcat" data-i="' + i + '" list="dlSubcat" value="' + esc(s.subcat||'') + '" placeholder="subcategoria"></td>' +
+      '<td class="stg-conta"><input data-f="conta" data-i="' + i + '" list="dlConta" value="' + esc(s.conta||'') + '"></td>' +
+      '<td class="stg-forma"><input data-f="forma" data-i="' + i + '" list="dlForma" value="' + esc(s.forma||'') + '"></td>' +
+      '<td class="stg-valor"><input data-f="v" data-i="' + i + '" type="number" step="0.01" min="0" value="' + s.v + '"></td>' +
+      '<td class="stg-badge-cell">' + (s._dup ? '<span class="stg-badge" title="Já existe na base">duplicado</span>' : '') + '</td>' +
+    '</tr>';
   }).join('');
 }
 function bindStagingEvents(){
@@ -2569,6 +2694,208 @@ function cancelStaging(){
 function renderLastImport(){
   var el = document.getElementById('lastImportInfo');
   if(el) el.textContent = lastImportAt ? fmtStamp(lastImportAt) : '—';
+}
+
+/* ================= IMPORTAÇÃO POR LINK DO GOOGLE SHEETS ================= */
+function extractSheetId(input){
+  var s = String(input).trim();
+  if(/^[a-zA-Z0-9_-]{15,}$/.test(s) && s.indexOf(' ') === -1 && !/^(http|www|docs)/.test(s)) return s;
+  var m = s.match(/\/d\/([a-zA-Z0-9_-]+)/);
+  return m ? m[1] : null;
+}
+function gvizLoad(id, tab, done){
+  var cbName = '_gcb' + Math.random().toString(36).slice(2,9);
+  var script = document.createElement('script');
+  var timer = setTimeout(function(){ cleanup(); done(new Error('timeout')); }, 45000);
+  function cleanup(){ clearTimeout(timer); delete window[cbName]; if(script.parentNode) script.parentNode.removeChild(script); }
+  window[cbName] = function(data){ cleanup(); done(null, data); };
+  script.onerror = function(){ cleanup(); done(new Error('network')); };
+  var u = 'https://docs.google.com/spreadsheets/d/' + encodeURIComponent(id) + '/gviz/tq?tqx=out:json;responseHandler:' + cbName;
+  if(tab) u += '&sheet=' + encodeURIComponent(tab);
+  u += '&_=' + Date.now();
+  script.src = u;
+  document.head.appendChild(script);
+}
+function parseGviz(resp){
+  var table = resp && resp.table;
+  if(!table || !table.rows) return [];
+  var idx = {};
+  table.cols.forEach(function(c,i){ idx[String(c.label||'').trim().toLowerCase()] = i; });
+  function cell(row,i){ return (row.c && row.c[i]) ? row.c[i].v : null; }
+  var out = [];
+  var iD = idx['data'], iV = idx['valor'], iT = idx['tipo'], iT2 = idx['tipo2'],
+      iCat = idx['categoria'], iSub = idx['subcategoria'], iConta = idx['conta/cartão'],
+      iForma = idx['forma pagamento'], iMes = idx['mês'], iAno = idx['ano'], iDesc = idx['descrição'];
+  table.rows.forEach(function(row){
+    var dRaw = cell(row,iD), d = null;
+    var desc = cell(row,iDesc)||'';
+    if(/total|subtotal|soma|saldo|fatura anterior/i.test(desc)) return;
+    if(typeof dRaw === 'string'){
+      var mm = dRaw.match(/Date\((\d+),(\d+),(\d+)/);
+      if(mm){ d = mm[1] + '-' + pad(+mm[2]+1) + '-' + pad(mm[3]); }
+    }
+    var v = parseFloat(cell(row,iV)); if(isNaN(v)) v = 0;
+    out.push({
+      d:d, desc:desc, v:v, tipo:cell(row,iT)||'', tipo2:cell(row,iT2)||'',
+      cat:cell(row,iCat)||'', subcat:cell(row,iSub)||'', conta:cell(row,iConta)||'',
+      forma:cell(row,iForma)||'', mes:normMes(cell(row,iMes)) || (d ? d.slice(5,7) : ''), ano:normAno(cell(row,iAno), d)
+    });
+  });
+  return out;
+}
+function loadPublicSheet(id, done){
+  var tabs = ['Lançamento','Lancamento','Lançamentos','Lancamentos','Dados','Movimentação'];
+  var i = 0;
+  function tryNext(){
+    if(i >= tabs.length){
+      gvizLoad(id, null, function(e, d){
+        if(e || !parseGviz(d).length) return done(new Error('empty'));
+        done(null, d);
+      });
+      return;
+    }
+    var t = tabs[i++];
+    gvizLoad(id, t, function(e, d){
+      if(e || !parseGviz(d).length){ tryNext(); return; }
+      done(null, d);
+    });
+  }
+  tryNext();
+}
+function apiGet(url, done){
+  fetch(url, {headers:{Authorization:'Bearer ' + app.token}})
+    .then(function(r){ return r.json().then(function(j){ return {ok:r.ok, j:j}; }); })
+    .then(function(res){
+      if(!res.ok){
+        var e = res.j && res.j.error ? {message:res.j.error.message||'erro', code:res.j.error.code} : {message:'erro na API'};
+        return done(e);
+      }
+      done(null, res.j);
+    })
+    .catch(function(e){ done({message:String(e.message||e), code:0}); });
+}
+function loadApiSheet(id, done){
+  apiGet('https://sheets.googleapis.com/v4/spreadsheets/' + encodeURIComponent(id) + '?fields=properties.title,sheets.properties.title', function(err, meta){
+    if(err) return done(err);
+    var tab = null;
+    if(meta.sheets){
+      var st = meta.sheets.map(function(s){ return s.properties.title; });
+      tab = st.find(function(t){ return /lan\s*ç/i.test(t) || /lan\s*c/i.test(t); });
+      if(!tab) tab = st[0];
+    }
+    apiGet('https://sheets.googleapis.com/v4/spreadsheets/' + encodeURIComponent(id) +
+      '/values/' + encodeURIComponent("'"+tab+"'!A:L") + '?valueRenderOption=FORMATTED_VALUE', function(err2, data){
+      if(err2) return done(err2);
+      if(!data || !data.values) return done({message:'Planilha sem dados', code:0});
+      done(null, {tab:tab, rows:data.values});
+    });
+  });
+}
+function normalizeSheetRows(rows){
+  if(!rows || !rows.length) return [];
+  var header = rows[0].map(function(c){ return String(c==null?'':c).trim().toLowerCase(); });
+  function col(name){
+    var i = header.indexOf(name);
+    if(i === -1) i = header.indexOf(name.replace('ç','c'));
+    return i;
+  }
+  var iD = col('data'), iDesc = col('descrição'), iVal = col('valor'), iT = col('tipo'),
+      iT2 = col('tipo2'), iCat = col('categoria'), iSub = col('subcategoria'),
+      iConta = col('conta/cartão'), iForma = col('forma pagamento'), iMes = col('mês'), iAno = col('ano');
+  var out = [];
+  for(var r = 1; r < rows.length; r++){
+    var row = rows[r] || [];
+    var desc = iDesc >= 0 ? String(row[iDesc]||'') : '';
+    var v = iVal >= 0 ? parseBRL(row[iVal]) : 0;
+    if(!desc && v === 0) continue;
+    if(/total|subtotal|soma|saldo|fatura anterior/i.test(desc)) continue;
+    var d = iD >= 0 ? parseDateCell(row[iD]) : null;
+    var mesRaw = iMes >= 0 ? String(row[iMes]||'').trim() : '';
+    if(!d && mesRaw){
+      var mm = mesRaw.match(/(\d{1,2})[\/\-](\d{4})/);
+      if(mm) d = mm[2] + '-' + pad(mm[1]) + '-01';
+    }
+    var ano = normAno(iAno >= 0 ? row[iAno] : null, d) || (mesRaw ? mesRaw.slice(-4) : '');
+    out.push({
+      d:d, desc:desc, v:v, tipo:iT>=0?String(row[iT]||''):'', tipo2:iT2>=0?String(row[iT2]||''):'',
+      cat:iCat>=0?String(row[iCat]||''):'', subcat:iSub>=0?String(row[iSub]||''):'',
+      conta:iConta>=0?String(row[iConta]||''):'', forma:iForma>=0?String(row[iForma]||''):'',
+      mes:normMes(mesRaw) || (d ? d.slice(5,7) : ''), ano:ano
+    });
+  }
+  return out;
+}
+function sheetRowsToEntries(rows){
+  return rows.map(function(r){
+    return {
+      date: r.d, desc: r.desc, v: r.v, tipo: r.tipo, tipo2: r.tipo2,
+      cat: r.cat, subcat: r.subcat, conta: r.conta, forma: r.forma
+    };
+  });
+}
+function sheetMsgForError(err){
+  if(!err) return 'Não foi possível carregar a planilha.';
+  var m = String(err.message || err);
+  if(/network|timeout|Failed to fetch|ERR_/i.test(m)) return 'Sem conexão com o Google Sheets. Verifique sua internet e tente novamente.';
+  if(/PERMISSION_DENIED|Forbidden|403/i.test(m) || /sem permissão/i.test(m)) return 'Sem permissão para ler essa planilha. Compartilhe como "qualquer pessoa com o link" OU faça login com Google tendo acesso à planilha.';
+  if(/NOT_FOUND|404/i.test(m)) return 'Planilha não encontrada. Confira se o link está correto.';
+  if(/expired|401|invalid_grant|UNAUTHENTICATED/i.test(m)) return 'Sua sessão expirou. Faça login novamente (botão Trancar).';
+  if(/empty/i.test(m)) return 'Nenhum lançamento encontrado. Confirme que a planilha tem uma aba "Lançamento" no mesmo formato do template.';
+  return 'Erro: ' + m;
+}
+function loadSheetByLink(link, done){
+  var id = extractSheetId(link);
+  if(!id) return done(new Error('link inválido'));
+  var finish = function(err, rows, source){
+    if(err) return done(err);
+    done(null, sheetRowsToEntries(rows), source, id);
+  };
+  if(app.token){
+    loadApiSheet(id, function(err, data){
+      if(err){
+        if(err.code === 401 || err.code === 403){
+          loadPublicSheet(id, function(e2, d2){
+            if(e2) return finish(err, [], 'api');
+            finish(null, parseGviz(d2), 'public');
+          });
+          return;
+        }
+        return finish(err, [], 'api');
+      }
+      finish(null, normalizeSheetRows(data.rows), 'api');
+    });
+  } else {
+    loadPublicSheet(id, function(e, d){
+      if(e) return finish(e, [], 'public');
+      finish(null, parseGviz(d), 'public');
+    });
+  }
+}
+function wireSheetImport(){
+  var btn = document.getElementById('btnConnect');
+  var inp = document.getElementById('sheetInput');
+  function go(){
+    var link = inp.value.trim();
+    if(!link){ toast('Cole o link da planilha.'); return; }
+    btn.disabled = true;
+    setConnectStatus('buscando dados da planilha…', 'busy');
+    loadSheetByLink(link, function(err, entries, source){
+      btn.disabled = false;
+      if(err){
+        setConnectStatus(sheetMsgForError(err), 'bad');
+        toast('Erro ao ler a planilha.');
+        return;
+      }
+      if(!entries || !entries.length){
+        setConnectStatus('Nenhum lançamento encontrado na aba "Lançamento".', 'bad');
+        return;
+      }
+      setConnectStatus('Planilha lida (' + (source === 'api' ? 'via sua conta Google' : 'link público') + '): ' + entries.length + ' linha(s). Revise abaixo e confirme.', 'good');
+      stageRows(entries, 'card');
+    });
+  }
+  if(btn) btn.addEventListener('click', go);
+  if(inp) inp.addEventListener('keydown', function(ev){ if(ev.key === 'Enter'){ ev.preventDefault(); go(); } });
 }
 
 /* ================= LANÇAMENTO MANUAL ================= */
@@ -2840,6 +3167,7 @@ function initLocalApp(){
       if(t){ lastImportAt = new Date(t); renderLastImport(); }
       wireImportUI();
       wireTxForm();
+      wireBackupUI();
       setConnectStatus(RAW.length ? 'Base local pronta.' : 'Nenhum extrato importado nesta sessão.', RAW.length ? 'good' : 'stale');
     })
     .then(loadLocalData)
@@ -4970,10 +5298,274 @@ function initPages(){
   });
 }
 
+/* ================= ACESSO / LOGIN (LOCAL + GOOGLE) =================
+   Para ler planilhas privadas do Google é preciso um CLIENT_ID OAuth.
+   Você pode manter o do seu projeto ou trocá-lo pelo seu próprio
+   (formato: xxx.apps.googleusercontent.com) no Google Cloud Console. */
+var APP_CONFIG = {
+  CLIENT_ID: '465608178043-sph2ch8viie75s2otgvdiie6jpn119gp.apps.googleusercontent.com',
+  SCOPE: 'openid email profile https://www.googleapis.com/auth/spreadsheets.readonly'
+};
+var app = { token:null, user:null };
+
+function ensureGsi(cb){
+  if(window.google && google.accounts && google.accounts.oauth2){ cb(); return; }
+  var s = document.createElement('script');
+  s.src = 'https://accounts.google.com/gsi/client';
+  s.async = true; s.defer = true;
+  s.onload = function(){ cb(); };
+  s.onerror = function(){ setConnectStatus('Não foi possível carregar o login do Google.', 'bad'); };
+  document.head.appendChild(s);
+}
+function handleLogin(fromLock){
+  function fail(msg){
+    if(fromLock){
+      var m = document.getElementById('lockMsg');
+      if(m){ m.textContent = msg; m.classList.remove('ok'); }
+    } else {
+      setConnectStatus(msg, 'bad');
+    }
+  }
+  if(!APP_CONFIG.CLIENT_ID || /SEU_CLIENT_ID/.test(APP_CONFIG.CLIENT_ID)){
+    fail('Configure o CLIENT_ID do Google na seção ACESSO / LOGIN do script.');
+    return;
+  }
+  if(/^file:/.test(location.protocol)){
+    fail('O login do Google exige HTTP(S): use o GitHub Pages ou o Live Server do VS Code.');
+    return;
+  }
+  ensureGsi(function(){
+    var client = google.accounts.oauth2.initTokenClient({
+      client_id: APP_CONFIG.CLIENT_ID,
+      scope: APP_CONFIG.SCOPE,
+      prompt: 'consent',
+      error_callback: function(e){
+        var raw = e || {};
+        var type = raw.type || raw.error || 'desconhecido';
+        var msg;
+        if(type === 'popup_closed') msg = 'A janela do Google foi fechada antes de concluir. Tente novamente.';
+        else if(type === 'popup_failed_to_open') msg = 'O navegador bloqueou o popup do Google. Permita popups para este site e tente de novo.';
+        else if(type === 'access_denied') msg = 'Você recusou o acesso. Autorize o login para ler planilhas privadas.';
+        else if(/origin|redirect_uri|client/i.test(String(raw.error_description || raw.message || ''))) msg = 'Configuração do Google Cloud incorreta: confira a ORIGEM autorizada (https://andrewsayllan-art.github.io) e o ID do cliente.';
+        else if(/consent|userinfo|disabled/i.test(String(raw.error_description || raw.message || ''))) msg = 'O app OAuth precisa estar publicado ou seu e-mail adicionado como usuário de teste na tela de consentimento.';
+        else msg = 'Erro do Google: ' + String(raw.error_description || raw.message || type) + '.';
+        fail('Login não concluído: ' + msg);
+      },
+      callback: function(resp){
+        app.token = resp.access_token;
+        sessionStorage.setItem('neonSession', JSON.stringify({token:app.token, at:Date.now()}));
+        fetchUserInfo(fromLock);
+      }
+    });
+    client.requestAccessToken();
+  });
+}
+function fetchUserInfo(fromLock){
+  fetch('https://openidconnect.googleapis.com/v1/userinfo', {headers:{Authorization:'Bearer ' + app.token}})
+    .then(function(r){ return r.json(); })
+    .then(function(u){
+      app.user = {name:u.name||'Usuário', email:u.email||'', picture:u.picture||''};
+      sessionStorage.setItem('neonSession', JSON.stringify({token:app.token, user:app.user, at:Date.now()}));
+      renderAuthUi();
+      if(fromLock){
+        unlockApp();
+      } else {
+        setConnectStatus('Conectado como ' + (app.user.name || app.user.email), 'good');
+      }
+    })
+    .catch(function(){ renderAuthUi(); });
+}
+function restoreSession(){
+  try{
+    var s = JSON.parse(sessionStorage.getItem('neonSession'));
+    if(s && s.token){ app.token = s.token; app.user = s.user || null; }
+  }catch(e){}
+}
+function signOut(){
+  if(app.token && window.google && google.accounts){
+    try{ google.accounts.oauth2.revoke(app.token, function(){}); }catch(e){}
+  }
+  app.token = null; app.user = null;
+  sessionStorage.removeItem('neonSession');
+  renderAuthUi();
+}
+function renderAuthUi(){
+  var area = document.getElementById('authArea');
+  if(!area) return;
+  if(app.user && app.user.email){
+    area.innerHTML =
+      '<div class="user-chip">' +
+        (app.user.picture ? '<img src="' + esc(app.user.picture) + '" alt="">' : '') +
+        '<div><div class="un">' + esc(app.user.name) + '</div><div class="ue">' + esc(app.user.email) + '</div></div>' +
+        '<button class="logout-btn" id="btnLogout">Sair</button>' +
+      '</div>';
+    var lo = document.getElementById('btnLogout');
+    if(lo) lo.addEventListener('click', signOut);
+  } else {
+    area.innerHTML = '';
+  }
+}
+
+/* ================= BLOQUEIO / LOGIN LOCAL ================= */
+var LOCK_MODE = 'login';
+function fallbackHash(str){
+  var h = 0;
+  for(var i=0;i<str.length;i++){ h = (h*31 + str.charCodeAt(i)) >>> 0; }
+  return 'fb' + h.toString(16);
+}
+function sha256Hex(str){
+  if(!window.crypto || !crypto.subtle) return Promise.resolve(fallbackHash(str));
+  return crypto.subtle.digest('SHA-256', new TextEncoder().encode(str)).then(function(buf){
+    return Array.from(new Uint8Array(buf)).map(function(b){ return b.toString(16).padStart(2,'0'); }).join('');
+  });
+}
+function lockConfig(){ try{ return JSON.parse(localStorage.getItem('neonLock')||'null'); }catch(e){ return null; } }
+function setLockConfig(user, hash, salt){ try{ localStorage.setItem('neonLock', JSON.stringify({user:user, hash:hash, salt:salt})); }catch(e){} }
+function isUnlocked(){ return sessionStorage.getItem('neonUnlocked') === '1'; }
+function lockMsg(txt, isOk){
+  var m = document.getElementById('lockMsg');
+  if(!m) return;
+  m.textContent = txt || '';
+  m.classList.toggle('ok', !!isOk);
+}
+function lockSetMode(mode){
+  LOCK_MODE = mode;
+  var cfg = lockConfig();
+  var form = document.getElementById('lockForm');
+  var title = document.getElementById('lockTitle');
+  var sub = document.getElementById('lockSub');
+  var foot = document.getElementById('lockFoot');
+  var google = document.getElementById('lockGoogle');
+  if(google) google.style.display = (mode === 'login' || mode === 'setup') ? '' : 'none';
+  if(mode === 'setup'){
+    title.textContent = 'Criar acesso';
+    sub.textContent = 'Defina um usuário e uma senha para proteger o painel. A verificação é feita neste navegador (hash SHA-256).';
+    form.innerHTML =
+      '<label class="lock-field"><span>Usuário</span><input id="lkUser" class="lock-input" autocomplete="username" spellcheck="false"></label>' +
+      '<label class="lock-field"><span>Senha</span><input id="lkPass" class="lock-input" type="password" autocomplete="new-password"></label>' +
+      '<label class="lock-field"><span>Confirmar senha</span><input id="lkPass2" class="lock-input" type="password" autocomplete="new-password"></label>' +
+      '<button id="lkGo" class="lock-btn" type="button">Criar acesso</button>';
+    foot.innerHTML = '<span class="lock-note">As credenciais ficam apenas neste navegador.</span>';
+  } else if(mode === 'change'){
+    title.textContent = 'Alterar senha';
+    sub.textContent = 'Informe a senha atual e a nova senha.';
+    form.innerHTML =
+      '<label class="lock-field"><span>Senha atual</span><input id="lkCur" class="lock-input" type="password" autocomplete="current-password"></label>' +
+      '<label class="lock-field"><span>Nova senha</span><input id="lkPass" class="lock-input" type="password" autocomplete="new-password"></label>' +
+      '<label class="lock-field"><span>Confirmar nova senha</span><input id="lkPass2" class="lock-input" type="password" autocomplete="new-password"></label>' +
+      '<button id="lkGo" class="lock-btn" type="button">Salvar nova senha</button>';
+    foot.innerHTML = '<span class="lock-link" id="lkBack">Voltar</span>';
+  } else {
+    title.textContent = 'Acesso ao painel';
+    sub.innerHTML = cfg
+      ? 'Bem-vindo de volta, <b>' + esc(cfg.user) + '</b>. Entre para continuar.'
+      : 'Entre para continuar.';
+    form.innerHTML =
+      '<label class="lock-field"><span>Usuário</span><input id="lkUser" class="lock-input" autocomplete="username" spellcheck="false"></label>' +
+      '<label class="lock-field"><span>Senha</span><input id="lkPass" class="lock-input" type="password" autocomplete="current-password"></label>' +
+      '<button id="lkGo" class="lock-btn" type="button">Entrar</button>';
+    foot.innerHTML = cfg
+      ? '<span class="lock-link" id="lkChange">Alterar senha</span><span class="lock-link" id="lkForgot">Esqueci a senha</span>'
+      : '<span class="lock-note">Primeira vez? Você definirá o acesso.</span>';
+  }
+  wireLock(mode);
+  lockMsg('');
+  var focus = form.querySelector('input');
+  if(focus) focus.focus();
+}
+function wireLock(mode){
+  var go = document.getElementById('lkGo');
+  var back = document.getElementById('lkBack');
+  var change = document.getElementById('lkChange');
+  var forgot = document.getElementById('lkForgot');
+  if(go){
+    go.addEventListener('click', function(){ submitLock(mode); });
+    Array.prototype.forEach.call(document.querySelectorAll('#lockForm input'), function(inp){
+      inp.addEventListener('keydown', function(ev){
+        if(ev.key === 'Enter'){ ev.preventDefault(); submitLock(mode); }
+      });
+    });
+  }
+  if(back) back.addEventListener('click', function(){ lockSetMode('login'); });
+  if(change) change.addEventListener('click', function(){ lockSetMode('change'); });
+  if(forgot) forgot.addEventListener('click', function(){
+    lockMsg('Para redefinir o acesso, apague os dados deste site no navegador (Configurações → Privacidade → Apagar dados do site) e recarregue.');
+  });
+}
+function submitLock(mode){
+  lockMsg('');
+  var cfg = lockConfig();
+  function finish(user, hash, salt){ setLockConfig(user, hash, salt); unlockApp(); }
+  if(mode === 'setup'){
+    var u = (document.getElementById('lkUser').value||'').trim();
+    var p1 = document.getElementById('lkPass').value;
+    var p2 = document.getElementById('lkPass2').value;
+    if(!u) return lockMsg('Informe um usuário.');
+    if(p1.length < 4) return lockMsg('A senha deve ter ao menos 4 caracteres.');
+    if(p1 !== p2) return lockMsg('As senhas não conferem.');
+    var salt = Math.random().toString(36).slice(2) + Date.now().toString(36);
+    sha256Hex(salt + '::' + p1).then(function(h){ finish(u, h, salt); });
+  } else if(mode === 'change'){
+    var cur = document.getElementById('lkCur').value;
+    var n1 = document.getElementById('lkPass').value;
+    var n2 = document.getElementById('lkPass2').value;
+    if(!cfg) return lockMsg('Nenhuma senha configurada.');
+    sha256Hex(cfg.salt + '::' + cur).then(function(h){
+      if(h !== cfg.hash) return lockMsg('Senha atual incorreta.');
+      if(n1.length < 4) return lockMsg('A nova senha deve ter ao menos 4 caracteres.');
+      if(n1 !== n2) return lockMsg('As novas senhas não conferem.');
+      var salt = Math.random().toString(36).slice(2) + Date.now().toString(36);
+      sha256Hex(salt + '::' + n1).then(function(h2){ finish(cfg.user, h2, salt); });
+    });
+  } else {
+    var lu = (document.getElementById('lkUser').value||'').trim();
+    var lp = document.getElementById('lkPass').value;
+    if(!cfg) return lockMsg('Nenhuma senha configurada. Recarregue a página.');
+    if(lu.toLowerCase() !== String(cfg.user).toLowerCase()) return lockMsg('Usuário ou senha incorretos.');
+    sha256Hex(cfg.salt + '::' + lp).then(function(h){
+      if(h !== cfg.hash) return lockMsg('Usuário ou senha incorretos.');
+      unlockApp();
+    });
+  }
+}
+function unlockApp(){
+  sessionStorage.setItem('neonUnlocked', '1');
+  document.getElementById('lockScreen').classList.remove('active');
+  bootstrapApp();
+}
+function lockNow(){
+  sessionStorage.removeItem('neonUnlocked');
+  document.getElementById('lockScreen').classList.add('active');
+  lockSetMode(lockConfig() ? 'login' : 'setup');
+}
+function bootLock(){
+  var hasCfg = !!lockConfig();
+  var btnLock = document.getElementById('btnLock');
+  if(btnLock){
+    btnLock.style.display = hasCfg ? '' : 'none';
+    btnLock.addEventListener('click', lockNow);
+  }
+  var btnLoginLock = document.getElementById('btnLoginLock');
+  if(btnLoginLock) btnLoginLock.addEventListener('click', function(){ handleLogin(true); });
+  if(isUnlocked()){
+    document.getElementById('lockScreen').classList.remove('active');
+    bootstrapApp();
+  } else {
+    document.getElementById('lockScreen').classList.add('active');
+    lockSetMode(hasCfg ? 'login' : 'setup');
+  }
+}
+function bootstrapApp(){
+  restoreSession();
+  renderAuthUi();
+  initLocalApp();
+}
+
 initPlanejamento();
 initSidebar();
 initPages();
-initLocalApp();
+wireSheetImport();
+bootLock();
 
 })();
 </script>
